@@ -10,7 +10,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.byType(LiquidGlassBackdrop), findsOneWidget);
+    expect(find.byType(LiquidGlassButton), findsNWidgets(2));
     expect(find.byType(LiquidGlassNavigationBar), findsOneWidget);
+    expect(find.text('Liquid Glass'), findsOneWidget);
   });
 }
