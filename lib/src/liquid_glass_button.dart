@@ -145,8 +145,12 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
     final radius = widget.size / 2;
 
     // Resolve tint: explicit override → default per brightness
-    final resolvedTint =
-        widget.tintOpacity ?? (isDark ? 0.72 : 0.82);
+    final resolvedTint = widget.tintOpacity ?? (isDark ? 0.72 : 0.82);
+    final tintOpacity = resolvedTint.clamp(0.0, 1.0).toDouble();
+    final tintColor = (isDark
+            ? const Color(0xFF1C1C1C)
+            : const Color(0xFFFBFBFF))
+        .withValues(alpha: tintOpacity);
 
     return AnimatedBuilder(
       animation: Listenable.merge(
@@ -204,11 +208,9 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
                         child: const SizedBox.expand(),
                       ),
 
-// ── Tint ──────────────────────────────────────────
+                      // ── Tint ──────────────────────────────────────────
                       ColoredBox(
-                        color: isDark
-                            ? const Color(0x661C1C1C)
-                            : const Color(0x66FBFBFF),
+                        color: tintColor,
                       ),
                       // ── Rim / specular / iridescent layers ────────────
                       CustomPaint(
