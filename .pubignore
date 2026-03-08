@@ -1,5 +1,5 @@
 .DS_Store
-assets/demo.mp4
+lib/.DS_Store
 pubspec.lock
 example/pubspec.lock
-lib/.DS_Store
+assets/demo.mp4
