@@ -4,7 +4,7 @@ A Flutter package implementing Apple's iOS 26 Liquid Glass design language. Glas
 
 ## Preview
 
-![liquid_kit demo](assets/demo.gif)
+![liquid_kit demo](https://raw.githubusercontent.com/nedbaynepowell/liquid-kit/main/assets/demo.gif)
 
 ---
 
@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  liquid_kit: ^0.1.0
+  liquid_kit: ^0.1.1
 ```
 
 Then run:
