@@ -1278,8 +1278,6 @@ class _GelEdgePainter extends CustomPainter {
   static const double _rimZone = 30.0;
   static const double _maxPull = 20.0;
   static const int    _slices  = 30;
-  static const double _shadowW = 7.0;
-  static const double _shadowA = 0.08;
 
   static double _ease(double t) {
     t = t.clamp(0.0, 1.0);
