@@ -1,0 +1,21 @@
+name: liquid_kit_example
+description: Example app for liquid_kit package
+version: 1.0.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.19.0"  # ← match main package minimum
+
+dependencies:
+  flutter:
+    sdk: flutter
+  liquid_kit:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
