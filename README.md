@@ -10,13 +10,17 @@ A Flutter package implementing Apple's iOS 26 Liquid Glass design language. Glas
 
 ## Installation
 
-Add to your `pubspec.yaml`:
+[![pub package](https://img.shields.io/pub/v/liquid_kit.svg)](https://pub.dev/packages/liquid_kit)
+```bash
+flutter pub add liquid_kit
+```
+```
 
 
 
 ```yaml
 dependencies:
-  liquid_kit: ^0.1.1
+  liquid_kit: ^0.1.2
 ```
 
 Then run:
