@@ -17,7 +17,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart' show Theme, Brightness, Colors;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import 'liquid_glass_physics.dart';
 import 'liquid_glass_theme.dart';
 import 'liquid_glass_painter.dart';

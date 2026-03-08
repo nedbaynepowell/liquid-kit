@@ -4,7 +4,7 @@ description: >
     glass buttons, toolbar, search bar and shape primitives with iridescent
     long-press effects and gyroscope speculars.
 version: 0.1.0
-homepage: https://github.com/yourusername/liquid_kit
+homepage: https://github.com/nedbaynepowell/liquid-kit
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
