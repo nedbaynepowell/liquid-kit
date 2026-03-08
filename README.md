@@ -2,15 +2,17 @@
 
 A Flutter package implementing Apple's iOS 26 Liquid Glass design language. Glass-material UI components with spring physics, interactive lift animations, and iridescent effects.
 
+## Preview
+
+![liquid_kit demo](assets/demo.gif)
+
 ---
 
 ## Installation
 
 Add to your `pubspec.yaml`:
 
-## Preview
 
-![liquid_kit demo](assets/demo.gif)
 
 ```yaml
 dependencies:
