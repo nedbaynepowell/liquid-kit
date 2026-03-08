@@ -255,8 +255,8 @@ const _articles = [
     icon: Icons.devices_rounded,
     title: 'Cross-platform',
     body: 'liquid_kit runs on iOS, Android, macOS and Web. Use '
-        'LiquidGlassMode.adaptive to automatically fall back to native '
-        'Material 3 styling on platforms where glass is not appropriate.',
+        'LiquidGlassMode.adaptive to opt into platform-aware rendering '
+        'instead of forcing the same glass treatment everywhere.',
   ),
   _Article(
     icon: Icons.code_rounded,
@@ -268,9 +268,9 @@ const _articles = [
   _Article(
     icon: Icons.accessibility_new_rounded,
     title: 'Accessibility',
-    body: 'Every interactive element includes semantic labels, selected '
-        'state announcements and respects the system reduce-motion and '
-        'high-contrast accessibility settings.',
+    body: 'The navigation bar exposes semantic labels and selected state, '
+        'motion-heavy transitions respect disable-animations, and glass '
+        'surfaces adjust their contrast for more legible rendering.',
   ),
 ];
 
