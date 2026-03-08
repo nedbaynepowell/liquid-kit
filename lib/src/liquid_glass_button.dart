@@ -8,6 +8,10 @@
 //     onPressed: () {},
 //     child: Icon(Icons.add, color: Colors.white, size: 20),
 //   )
+//
+// No tint (fully transparent glass):
+//   LiquidGlassButton(onPressed: () {}, tintOpacity: 0.0)
+
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart' show Theme, Brightness, Colors;
@@ -130,6 +134,7 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
     final theme = LiquidGlassTheme.of(context);
     final blur = widget.blurSigma ?? theme?.resolvedBlurSigma ?? kBlurSigma;
     final radius = widget.size / 2;
+
     return AnimatedBuilder(
       animation: Listenable.merge(
           [_liftCtrl, _iridCtrl, _iridOpacityCtrl, _expandT]),
