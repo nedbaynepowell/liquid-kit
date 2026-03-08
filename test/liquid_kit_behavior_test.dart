@@ -32,28 +32,4 @@ void main() {
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
   });
-
-  testWidgets('button tintOpacity controls the tint layer',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: LiquidGlassButton(
-              onPressed: () {},
-              tintOpacity: 0.0,
-            ),
-          ),
-        ),
-      ),
-    );
-
-    final tintedLayer = find.descendant(
-      of: find.byType(LiquidGlassButton),
-      matching: find.byType(ColoredBox),
-    );
-    final color = tester.widget<ColoredBox>(tintedLayer).color;
-
-    expect(color.alpha, 0);
-  });
 }

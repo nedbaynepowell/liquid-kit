@@ -8,19 +8,13 @@
 //     onPressed: () {},
 //     child: Icon(Icons.add, color: Colors.white, size: 20),
 //   )
-//
-// No tint (fully transparent glass):
-//   LiquidGlassButton(onPressed: () {}, tintOpacity: 0.0)
-
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart' show Theme, Brightness, Colors;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import 'liquid_glass_physics.dart';
 import 'liquid_glass_theme.dart';
-import 'liquid_glass_painter.dart';
 
 class LiquidGlassButton extends StatefulWidget {
   const LiquidGlassButton({
@@ -29,7 +23,6 @@ class LiquidGlassButton extends StatefulWidget {
     this.child,
     this.size = 44.0,
     this.blurSigma,
-    this.tintOpacity,
     this.isDark,
   });
 
@@ -44,12 +37,6 @@ class LiquidGlassButton extends StatefulWidget {
 
   /// Background blur strength. Defaults to the theme value or `20.0`.
   final double? blurSigma;
-
-  /// Frosted tint opacity (0.0–1.0).
-  /// Set to `0.0` for fully transparent glass — the blur and rim effects
-  /// remain visible but no colour fill is added.
-  /// Defaults to `0.72` in dark mode, `0.82` in light mode.
-  final double? tintOpacity;
 
   /// Override light/dark mode. Defaults to the ambient [Theme].
   final bool? isDark;
@@ -143,15 +130,6 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
     final theme = LiquidGlassTheme.of(context);
     final blur = widget.blurSigma ?? theme?.resolvedBlurSigma ?? kBlurSigma;
     final radius = widget.size / 2;
-
-    // Resolve tint: explicit override → default per brightness
-    final resolvedTint = widget.tintOpacity ?? (isDark ? 0.72 : 0.82);
-    final tintOpacity = resolvedTint.clamp(0.0, 1.0).toDouble();
-    final tintColor = (isDark
-            ? const Color(0xFF1C1C1C)
-            : const Color(0xFFFBFBFF))
-        .withValues(alpha: tintOpacity);
-
     return AnimatedBuilder(
       animation: Listenable.merge(
           [_liftCtrl, _iridCtrl, _iridOpacityCtrl, _expandT]),
@@ -210,7 +188,9 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
 
                       // ── Tint ──────────────────────────────────────────
                       ColoredBox(
-                        color: tintColor,
+                        color: isDark
+                            ? const Color(0x661C1C1C)
+                            : const Color(0x66FBFBFF),
                       ),
                       // ── Rim / specular / iridescent layers ────────────
                       CustomPaint(

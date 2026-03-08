@@ -77,8 +77,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
   bool _pillSettled = true;
   double _barWidth = 0.0;
   double _stretchProgress = 0.0;
-  double get _scaleX => 1.0 + _stretchProgress * (kMaxStretchX - 1.0);
-  double get _scaleY => 1.0 - _stretchProgress * (1.0 - kMinSquashY);
   List<double> _tabCentres = [];
   double? _previewPillX;
 
@@ -105,7 +103,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
   List<double> _tabOffsets = [];
   late AnimationController _expandCtrl;
   late Animation<double> _expandT;
-  late Animation<double> _expandBlur;
   late Animation<double> _expandRadius;
   late AnimationController _tabSpringCtrl;
   late AnimationController _restCtrl;
@@ -179,9 +176,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         parent: _expandCtrl,
         curve: Curves.easeOutCubic,
         reverseCurve: Curves.easeInCubic);
-    _expandBlur = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: _expandCtrl,
-        curve: const Interval(0.0, 0.7, curve: Curves.easeOut)));
     _expandRadius = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: _expandCtrl,
@@ -1129,7 +1123,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         (pillCentre - _tabCentres[_displayIndex]).abs() < 2.0;
 
     final activeBaseColor =
-    selectedColor.withOpacity(isBaseActive && overlayReady ? 0.18 : 1.0);
+    selectedColor.withValues(alpha: isBaseActive && overlayReady ? 0.18 : 1.0);
 
     final iconColor = isOverlayActive
         ? selectedColor
@@ -1295,8 +1289,6 @@ class _GelEdgePainter extends CustomPainter {
   static const double _rimZone = 30.0;
   static const double _maxPull = 20.0;
   static const int    _slices  = 30;
-  static const double _shadowW = 7.0;
-  static const double _shadowA = 0.08;
 
   static double _ease(double t) {
     t = t.clamp(0.0, 1.0);
