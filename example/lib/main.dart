@@ -72,7 +72,6 @@ class _ExampleHomeState extends State<ExampleHome> {
             left: 16,
             child: LiquidGlassButton(
               size: 44,
-              tintOpacity: 0.0,
               onPressed: () {},
             ),
           ),
@@ -108,7 +107,6 @@ class _ExampleHomeState extends State<ExampleHome> {
             right: 16,
             child: LiquidGlassButton(
               size: 44,
-              tintOpacity: 0.0,
               onPressed: () {},
               child: Icon(Icons.add_rounded, color: iconColor, size: 22),
             ),

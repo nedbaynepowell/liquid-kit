@@ -10,11 +10,15 @@ Today it ships:
 
 It does not currently include a toolbar, search bar, or general shape primitives.
 
+## Preview
+
+![liquid_kit demo](https://raw.githubusercontent.com/nedbaynepowell/liquid-kit/main/assets/demo.gif)
+
 ## Installation
 
 ```yaml
 dependencies:
-  liquid_kit: ^0.1.0
+  liquid_kit: ^0.1.1
 ```
 
 ```bash
@@ -63,7 +67,6 @@ Useful options:
 
 - `size` changes the button diameter.
 - `blurSigma` overrides the blur amount.
-- `tintOpacity` controls how frosted or transparent the glass fill appears.
 - `isDark` overrides theme brightness detection.
 
 ## Theming

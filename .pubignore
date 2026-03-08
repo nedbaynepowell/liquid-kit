@@ -1,0 +1,5 @@
+.DS_Store
+lib/.DS_Store
+pubspec.lock
+example/pubspec.lock
+assets/demo.mp4
