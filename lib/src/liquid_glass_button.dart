@@ -186,7 +186,7 @@ class _LiquidGlassButtonState extends State<LiquidGlassButton>
                         child: const SizedBox.expand(),
                       ),
 
-                      // ── Tint ──────────────────────────────────────────
+// ── Tint ──────────────────────────────────────────
                       ColoredBox(
                         color: isDark
                             ? const Color(0x661C1C1C)
