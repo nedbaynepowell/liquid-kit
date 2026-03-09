@@ -1,5 +1,7 @@
 // liquid_glass_navigation_bar.dart
 // v5 + gel edge using bright row snapshot (correct blue/accent colours).
+// FIX: All "pop" animations (expand, lift, irid) now fire simultaneously
+//      at the long-press threshold moment — no more split timing.
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -110,9 +112,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
   late Animation<double> _impactRipple;
 
   // ─── Snapshot ─────────────────────────────────────────────────────
-  // We snapshot the BRIGHT row (inside the pill) so the gel painter
-  // warps the blue/accent selected colour, not the dim grey row.
-
   void _captureTabRowSnapshot() {
     final ro = _brightRowKey.currentContext?.findRenderObject();
     if (ro is RenderRepaintBoundary) {
@@ -139,7 +138,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       ..addListener(_onPillUpdate);
 
     _stretchCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 700));
+        vsync: this, duration: const Duration(milliseconds: 350));
     _stretchAnim = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 50),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 50),
@@ -311,17 +310,23 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       });
       return;
     }
+
+    // If the pill is already at the target (e.g. hold-and-release on current
+    // tab), skip the stretch/spring entirely so _pillSettled stays true.
+    final alreadyThere = (_pillX - newX).abs() < 1.0;
     setState(() {
       _pillWidth = newWidth;
       _pillTargetX = newX;
-      _pillSettled = false;
+      _pillSettled = alreadyThere;
     });
+    if (alreadyThere) return;
+
     _stretchCtrl.forward(from: 0.0);
     _pillCtrl.animateWith(SpringSimulation(
       SpringDescription(
           mass: kTabSwitchMass,
-          stiffness: widget.springStiffness ?? 120.0,
-          damping: widget.springDamping ?? 18.0),
+          stiffness: widget.springStiffness ?? 420.0,
+          damping: widget.springDamping ?? 28.0),
       _pillX, newX, 0,
     ));
   }
@@ -338,17 +343,23 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _pointerDownPos = e.localPosition;
     _isPressed = true;
     setState(() => _fingerOffset = e.localPosition);
+
     if (_isOnActivePill(e.localPosition)) {
+      // ── ACTIVE PILL: arm long-press only; do NOT start any pop animations yet.
+      // Everything fires together at the long-press threshold in _activateLongPress.
       _longPressArmed = true;
-      _expandCtrl.forward();
       Future.delayed(kLongPressThreshold, () {
         if (_longPressArmed && mounted) _activateLongPress(e.localPosition);
       });
     } else {
+      // ── INACTIVE TAB: immediate tap-preview behaviour (no hold needed).
+      // All three pop animations fire together here so the pill preview,
+      // the iridescent shimmer, and the outer dim all begin at the same instant.
       _expandCtrl.forward();
       _liftCtrl.forward();
       _iridCtrl.repeat();
       _iridOpacityCtrl.forward();
+
       for (int i = 0; i < _tabCentres.length; i++) {
         if (i == widget.currentIndex) continue;
         final cellRect = _tabCellRect(i);
@@ -429,7 +440,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         }
       }
     });
-    // In _onPointerMove, inside the _isDragging block, after setState:
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _captureTabRowSnapshot();
     });
@@ -439,11 +449,16 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _longPressArmed = false;
     _isPressed = false;
     final hadPreview = _previewPillX != null;
-    if (!_isDragging) _expandCtrl.reverse();
+    final wasDragging = _isDragging;
     setState(() => _fingerOffset = null);
-    if (_isDragging) {
+
+    if (wasDragging) {
+      // Covers both: actual drag AND hold-and-release with no movement.
+      // _activateLongPress always sets _isDragging = true alongside _isLongPressed,
+      // so _endDrag → _deactivateLongPress handles both cases correctly.
       _endDrag(velocity: _dragVelocity);
     } else if (hadPreview) {
+      // Tap-preview on inactive tab released — commit the tab change.
       setState(() => _previewPillX = null);
       for (int i = 0; i < _tabCentres.length; i++) {
         final cellRect = _tabCellRect(i);
@@ -457,7 +472,18 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       }
       setState(() => _previewPillX = null);
       _liftCtrl.reverse();
-      _iridOpacityCtrl.reverse();
+      _iridOpacityCtrl.reverse().then((_) {
+        if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+      });
+      _expandCtrl.reverse();
+    } else {
+      // Normal press/release with no special state — reverse expand and any
+      // partial lift that may have started from an inactive-tab flow.
+      _expandCtrl.reverse();
+      _liftCtrl.reverse();
+      _iridOpacityCtrl.reverse().then((_) {
+        if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+      });
     }
   }
 
@@ -483,21 +509,40 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
   double _rubberBand(double o, double r) =>
       (1.0 - (1.0 / ((o * 0.55 / r) + 1.0))) * r;
 
+  /// All three pop animations fire together here — expand, lift, and irid —
+  /// so the pill scale, the outer dim, the iridescent overlay, and the tab
+  /// content colour all start at exactly the same frame.
   void _activateLongPress(Offset pos) {
     if (!mounted) return;
     _captureTabRowSnapshot();
-    setState(() { _isDragging = true; _isLongPressed = true; _dragCurrentX = _pillX; });
-    _liftCtrl.forward();
+
+    // Reset controllers so they all begin from 0 at the same instant.
+    _expandCtrl.forward(from: 0.0);
+    _liftCtrl.forward(from: 0.0);
     _iridCtrl.repeat();
-    _iridOpacityCtrl.forward();
+    _iridOpacityCtrl.forward(from: 0.0);
+
+    setState(() {
+      _isDragging = true;
+      _isLongPressed = true;
+      _dragCurrentX = _pillX;
+    });
   }
 
   void _deactivateLongPress() {
     if (!_isLongPressed) return;
-    setState(() { _isLongPressed = false; _isDragging = false; _tabOffsets = List.filled(widget.tabs.length, 0.0); });
+    setState(() {
+      _isLongPressed = false;
+      _isDragging = false;
+      _stretchProgress = 0.0;
+      _pillSettled = true;
+      _tabOffsets = List.filled(widget.tabs.length, 0.0);
+    });
     _liftCtrl.reverse();
     _expandCtrl.reverse();
-    _iridOpacityCtrl.reverse().then((_) { _iridCtrl..stop()..reset(); });
+    _iridOpacityCtrl.reverse().then((_) {
+      if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+    });
   }
 
   void _endDrag({required double velocity}) {
@@ -531,8 +576,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _liftCtrl.reverse();
     _iridOpacityCtrl.reverse().then((_) { _iridCtrl..stop()..reset(); });
     _pendingSnapIndex = index;
-    // Update displayIndex first so brightRow renders the new blue colour,
-    // then snapshot it on the next frame before the pill has moved.
     setState(() {
       _displayIndex = index;
       _previewPillX = null;
@@ -615,7 +658,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     return AnimatedBuilder(
       animation: Listenable.merge([
         _liftCtrl, _iridOpacityCtrl, _iridCtrl,
-        _collapseCtrl, _expandCtrl, _restCtrl, _impactCtrl,
+        _collapseCtrl, _expandCtrl, _restCtrl, _impactCtrl, _stretchCtrl,
       ]),
       builder: (context, _) {
         return SizedBox(
@@ -690,6 +733,36 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            // BackdropFilter must live OUTSIDE the Opacity widget.
+            // Flutter composites an Opacity subtree into an offscreen layer,
+            // which means a BackdropFilter inside it only blurs that offscreen
+            // layer rather than the real backdrop — killing the blur effect.
+            // By separating them, blur stays at full strength even when the
+            // decorative layer dims during a long-press.
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(morphRadius),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.compose(
+                    outer: ui.ImageFilter.blur(
+                      sigmaX: blur * 0.18,
+                      sigmaY: blur * 0.18,
+                      tileMode: TileMode.clamp,
+                    ),
+                    inner: ui.ImageFilter.matrix(
+                      (Matrix4.identity()
+                        ..setEntry(0, 0, 1.0 + _expandT.value * 0.004)
+                        ..setEntry(1, 1, 1.0 + _expandT.value * 0.003))
+                          .storage,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ),
+            // Tint, shadow, gel rim and border dim together on lift —
+            // but the blur layer above is unaffected.
             Positioned.fill(
               child: Opacity(
                 opacity: _outerDim.value,
@@ -716,32 +789,11 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        // ── Gel backdrop: blur + chromatic shift ──────────────────
-                        BackdropFilter(
-                          filter: ui.ImageFilter.compose(
-                            outer: ui.ImageFilter.blur(
-                              sigmaX: blur * 0.18,
-                              sigmaY: blur * 0.18,
-                              tileMode: TileMode.clamp,
-                            ),
-                            inner: ui.ImageFilter.matrix(
-                              (Matrix4.identity()
-                                ..setEntry(0, 0, 1.0 + _expandT.value * 0.004)
-                                ..setEntry(1, 1, 1.0 + _expandT.value * 0.003))
-                                  .storage,
-                              filterQuality: FilterQuality.medium,
-                            ),
-                          ),
-                          child: const SizedBox.expand(),
-                        ),
-                        // ── Frosted tint layer ────────────────────────────────────
-                        // ── Gel tint ──────────────────────────────────────────────────────
                         Container(
                           color: isDark
                               ? const Color(0xCC1C1C1C)
                               : const Color(0xCCFBFBFF),
                         ),
-                        // ── Lens-distortion gel rim via CustomPainter ─────────────
                         CustomPaint(
                           painter: _GelBackdropPainter(
                             isDark: isDark,
@@ -750,7 +802,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                             liftT: _liftCtrl.value,
                           ),
                         ),
-                        // ── Specular border ───────────────────────────────────────
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(morphRadius),
@@ -836,7 +887,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 top: (kOuterPillHeight / 2) - (kInnerPillHeight / 2) - (0.0 * _liftCtrl.value / 2),
                 width: _pillWidth + (20.0 * _liftCtrl.value),
                 height: kInnerPillHeight,
-                // With:
                 child: OverflowBox(
                   maxWidth: _pillWidth * 1.6 + (20.0 * _liftCtrl.value),
                   maxHeight: kOuterPillHeight * 3.4,
@@ -845,7 +895,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                     width: _pillWidth,
                     height: kInnerPillHeight + (20.0 * _liftCtrl.value),
                     child: Builder(builder: (context) {
-
                       return Container(
                         child: Transform(
                           alignment: Alignment.center,
@@ -960,8 +1009,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       final expandedRadius = (leftRadius * 1.8) + (kOuterPillHeight * 0.6) * _liftCtrl.value;
       final pillBorderRadius = BorderRadius.all(Radius.circular(expandedRadius));
 
-      // Wrap the bright row in a RepaintBoundary so we can snapshot it.
-      // This is the source for the gel painter — always the blue/accent colour.
       final brightRow = IgnorePointer(
         child: ClipRect(
           child: OverflowBox(
@@ -1002,8 +1049,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         child: Stack(fit: StackFit.expand, children: [
           brightRow,
 
-          // Gel edge — warps the BRIGHT row snapshot so the distorted
-          // pixels at the pill edges are the correct blue/accent colour.
           if (_tabRowSnapshot != null)
             Positioned.fill(
               child: IgnorePointer(
@@ -1180,12 +1225,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
 // ─────────────────────────────────────────────────────────────────────────────
 // _GelBackdropPainter
-// Draws the liquid-glass gel rim on the outer navigation bar:
-//   • a radial-gradient inner glow along the top edge (specular lobe)
-//   • a soft darkening around the bottom rim (depth shadow)
-//   • a subtle concave highlight sweep across the full top surface
-// This gives the pill the "thick transparent gel" look Apple uses where
-// content behind it appears slightly magnified and colour-shifted at the edges.
 // ─────────────────────────────────────────────────────────────────────────────
 class _GelBackdropPainter extends CustomPainter {
   const _GelBackdropPainter({
@@ -1207,8 +1246,6 @@ class _GelBackdropPainter extends CustomPainter {
       Radius.circular(radius),
     );
 
-    // ── 2. Bottom rim depth shadow ────────────────────────────────────
-    // The gel is thicker at the edges — darken the lower rim slightly.
     final bottomRect = Rect.fromLTWH(0, size.height * 0.6, size.width, size.height * 0.4);
     final bottomPaint = Paint()
       ..shader = LinearGradient(
@@ -1223,9 +1260,6 @@ class _GelBackdropPainter extends CustomPainter {
       ).createShader(bottomRect);
     canvas.drawRRect(rr, bottomPaint);
 
-    // ── 3. Left/right edge chromatic rim ─────────────────────────────
-    // At the pill sides the glass curves away — paint a very subtle
-    // darkening strip to sell the gel thickness.
     for (final isLeft in [true, false]) {
       final edgeRect = Rect.fromLTWH(
         isLeft ? 0 : size.width - radius * 0.9,
@@ -1247,7 +1281,6 @@ class _GelBackdropPainter extends CustomPainter {
       canvas.drawRRect(rr, edgePaint);
     }
 
-    // ── 4. Lift shimmer — brightens the whole pill when dragging ──────
     if (liftT > 0.01) {
       final shimmerPaint = Paint()
         ..color = Colors.white.withValues(alpha: liftT * 0.04)
@@ -1265,10 +1298,8 @@ class _GelBackdropPainter extends CustomPainter {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// _GelEdgePainter — unchanged from v5, but now fed the BRIGHT row snapshot
-// so the warped pixels at the pill edges show the blue/accent colour.
+// _GelEdgePainter
 // ─────────────────────────────────────────────────────────────────────────────
-
 class _GelEdgePainter extends CustomPainter {
   const _GelEdgePainter({
     required this.image,
@@ -1337,7 +1368,6 @@ class _GelEdgePainter extends CustomPainter {
       }
     }
 
-    // Iridescent soap-bubble border — full perimeter
     final rrectBorder = RRect.fromLTRBAndCorners(
       0, 0, pillWidth, size.height,
       topLeft:     Radius.circular(leftRadius),
@@ -1346,7 +1376,6 @@ class _GelEdgePainter extends CustomPainter {
       bottomRight: Radius.circular(rightRadius),
     );
 
-// Horizontal sweep (top & bottom)
     final hPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.centerLeft,

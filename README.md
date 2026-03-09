@@ -16,7 +16,6 @@ It does not currently include a toolbar, search bar, or general shape primitives
 
 ## Installation
 
-<<<<<<< HEAD
 [![pub package](https://img.shields.io/pub/v/liquid_kit.svg)](https://pub.dev/packages/liquid_kit)
 ```bash
 flutter pub add liquid_kit
