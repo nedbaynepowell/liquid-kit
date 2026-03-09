@@ -1,8 +1,20 @@
-# Changelog
+## 0.1.4
+- Polish package description and documentation
+- Export liquid_glass_physics.dart from public API
+- Fix README installation instructions
 
-All notable changes to this project will be documented in this file.
+## 0.1.3
+- Fix demo GIF URL for pub.dev
+- Update README
 
-## 0.1.0 - 2026-03-05
+## 0.1.2
+- Fix adaptive mode fallback to Material NavigationBar on Android
+- Add widget tests
 
-- Initial public release of `liquid_kit`.
-- Added liquid glass navigation bar, button, toolbar, search bar, shape primitives, and backdrop/refraction infrastructure.
+## 0.1.1
+- Initial release fixes
+
+## 0.1.0
+- Initial release
+- LiquidGlassNavigationBar with spring physics
+- LiquidGlassButton with lift animations
