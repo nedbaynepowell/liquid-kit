@@ -1,8 +1,7 @@
 name: liquid_kit
 description: >
-  Apple iOS 26 Liquid Glass UI kit for Flutter — spring-physics navigation bar,
-    glass buttons, toolbar, search bar and shape primitives with iridescent
-    long-press effects and gyroscope speculars.
+  Liquid Glass-inspired Flutter widgets with a spring navigation bar,
+    glass buttons, theme helpers, and tunable motion constants.
 version: 0.1.3
 homepage: https://github.com/nedbaynepowell/liquid-kit
 
