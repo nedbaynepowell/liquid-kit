@@ -23,7 +23,7 @@ class SpecularHighlightPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final rrect =
-    RRect.fromRectAndRadius(rect, Radius.circular(size.height / 2));
+        RRect.fromRectAndRadius(rect, Radius.circular(size.height / 2));
 
     if (fingerOffset != null) {
       final fingerPaint = Paint()
@@ -45,8 +45,8 @@ class SpecularHighlightPainter extends CustomPainter {
   @override
   bool shouldRepaint(SpecularHighlightPainter old) =>
       fingerOffset != old.fingerOffset ||
-          intensity != old.intensity ||
-          isDark != old.isDark;
+      intensity != old.intensity ||
+      isDark != old.isDark;
 }
 
 /// Paints the complete glass pill visual — refraction shimmer, edge SDF glow,
@@ -84,15 +84,15 @@ class GlassPillPainter extends CustomPainter {
         radius: 1.2,
         colors: isDark
             ? [
-          const Color(0x28FFFFFF),
-          const Color(0x00FFFFFF),
-          const Color(0x14000000),
-        ]
+                const Color(0x28FFFFFF),
+                const Color(0x00FFFFFF),
+                const Color(0x14000000),
+              ]
             : [
-          const Color(0x38FFFFFF),
-          const Color(0x00FFFFFF),
-          const Color(0x0A000000),
-        ],
+                const Color(0x38FFFFFF),
+                const Color(0x00FFFFFF),
+                const Color(0x0A000000),
+              ],
         stops: const [0.0, 0.55, 1.0],
       ).createShader(rect);
     canvas.drawRRect(rrect, refractionPaint);
@@ -196,9 +196,9 @@ class GlassPillPainter extends CustomPainter {
   @override
   bool shouldRepaint(GlassPillPainter old) =>
       isDark != old.isDark ||
-          liftT != old.liftT ||
-          iridOpacity != old.iridOpacity ||
-          iridAngle != old.iridAngle;
+      liftT != old.liftT ||
+      iridOpacity != old.iridOpacity ||
+      iridAngle != old.iridAngle;
 }
 
 class WakeTrailPainter extends CustomPainter {
@@ -248,10 +248,10 @@ class WakeTrailPainter extends CustomPainter {
   @override
   bool shouldRepaint(WakeTrailPainter oldDelegate) =>
       progress != oldDelegate.progress ||
-          direction != oldDelegate.direction ||
-          leftRadius != oldDelegate.leftRadius ||
-          rightRadius != oldDelegate.rightRadius ||
-          isDark != oldDelegate.isDark;
+      direction != oldDelegate.direction ||
+      leftRadius != oldDelegate.leftRadius ||
+      rightRadius != oldDelegate.rightRadius ||
+      isDark != oldDelegate.isDark;
 }
 
 /// A subtle outward ripple used on tab-switch impact.

@@ -43,7 +43,7 @@ class LiquidGlassNavigationBar extends StatefulWidget {
     this.springDamping,
     this.mode,
   }) : assert(tabs.length >= 2 && tabs.length <= 5,
-  'LiquidGlassNavigationBar supports 2–5 tabs');
+            'LiquidGlassNavigationBar supports 2–5 tabs');
 
   final List<LiquidGlassTab> tabs;
   final int currentIndex;
@@ -116,7 +116,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     final ro = _brightRowKey.currentContext?.findRenderObject();
     if (ro is RenderRepaintBoundary) {
       try {
-        final img = ro.toImageSync(pixelRatio: View.of(context).devicePixelRatio);
+        final img =
+            ro.toImageSync(pixelRatio: View.of(context).devicePixelRatio);
         if (img.width > 0) {
           _tabRowSnapshot?.dispose();
           _tabRowSnapshot = img;
@@ -175,10 +176,9 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         parent: _expandCtrl,
         curve: Curves.easeOutCubic,
         reverseCurve: Curves.easeInCubic);
-    _expandRadius = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _expandCtrl,
-            curve: const Interval(0.1, 0.9, curve: Curves.easeInOut)));
+    _expandRadius = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _expandCtrl,
+        curve: const Interval(0.1, 0.9, curve: Curves.easeInOut)));
     _collapseCtrl =
         AnimationController(vsync: this, duration: kCollapseDuration);
     _collapseAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -194,11 +194,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
   void _measureAndSnap({required bool animate, int? targetIndex}) {
     if (!mounted) return;
-    final stackBox =
-    _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final stackBox = _stackKey.currentContext?.findRenderObject() as RenderBox?;
     if (stackBox == null) {
       WidgetsBinding.instance.addPostFrameCallback(
-              (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
+          (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
       return;
     }
     final centres = <double>[];
@@ -211,14 +210,14 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       final box = key.currentContext?.findRenderObject() as RenderBox?;
       if (box == null) {
         WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
+            (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
         return;
       }
       widths.add(box.size.width);
     }
     if (widths.length != widget.tabs.length) {
       WidgetsBinding.instance.addPostFrameCallback(
-              (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
+          (_) => _measureAndSnap(animate: animate, targetIndex: targetIndex));
       return;
     }
     setState(() {
@@ -233,21 +232,18 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
   double? _resolvedPillWidth() {
     if (_pillWidth > 0) return _pillWidth;
-    final stackBox =
-    _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final stackBox = _stackKey.currentContext?.findRenderObject() as RenderBox?;
     if (stackBox == null || !stackBox.hasSize || widget.tabs.isEmpty)
       return null;
     return (stackBox.size.width / widget.tabs.length) * 1.06;
   }
 
   Rect? _tabCellRect(int index) {
-    final stackBox =
-    _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final stackBox = _stackKey.currentContext?.findRenderObject() as RenderBox?;
     if (stackBox == null || widget.tabs.isEmpty || index >= widget.tabs.length)
       return null;
     final cellWidth = stackBox.size.width / widget.tabs.length;
-    return Rect.fromLTWH(
-        cellWidth * index, 0, cellWidth, stackBox.size.height);
+    return Rect.fromLTWH(cellWidth * index, 0, cellWidth, stackBox.size.height);
   }
 
   double _currentTravelDirection() {
@@ -287,8 +283,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       _measureAndSnap(animate: animate, targetIndex: index);
       return;
     }
-    final stackBox =
-    _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final stackBox = _stackKey.currentContext?.findRenderObject() as RenderBox?;
     final totalBarWidth = stackBox?.size.width ?? 0.0;
     if (totalBarWidth <= 0) {
       _measureAndSnap(animate: animate, targetIndex: index);
@@ -327,7 +322,9 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
           mass: kTabSwitchMass,
           stiffness: widget.springStiffness ?? 420.0,
           damping: widget.springDamping ?? 28.0),
-      _pillX, newX, 0,
+      _pillX,
+      newX,
+      0,
     ));
   }
 
@@ -374,7 +371,9 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 mass: kTabSwitchMass,
                 stiffness: widget.springStiffness ?? kTabSwitchStiffness,
                 damping: widget.springDamping ?? kTabSwitchDamping),
-            _pillX, targetX, 0,
+            _pillX,
+            targetX,
+            0,
           ));
           break;
         }
@@ -384,7 +383,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
   void _onPointerMove(PointerMoveEvent e) {
     if (!_isDragging &&
-        (e.localPosition - _pointerDownPos).distance > kLongPressCancelDistance) {
+        (e.localPosition - _pointerDownPos).distance >
+            kLongPressCancelDistance) {
       _longPressArmed = false;
     }
     setState(() => _fingerOffset = e.localPosition);
@@ -392,13 +392,17 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     if (!_isDragging && _previewPillX != null) {
       final pw = _resolvedPillWidth();
       final stackBox =
-      _stackKey.currentContext?.findRenderObject() as RenderBox?;
+          _stackKey.currentContext?.findRenderObject() as RenderBox?;
       if (pw != null && stackBox != null) {
-        final targetX =
-        (e.localPosition.dx - pw / 2).clamp(0.0, stackBox.size.width - pw).toDouble();
+        final targetX = (e.localPosition.dx - pw / 2)
+            .clamp(0.0, stackBox.size.width - pw)
+            .toDouble();
         _pillCtrl.stop();
         _pillCtrl.value = targetX;
-        setState(() { _previewPillX = targetX; _pillX = targetX; });
+        setState(() {
+          _previewPillX = targetX;
+          _pillX = targetX;
+        });
       }
       return;
     }
@@ -414,9 +418,9 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     setState(() {
       _dragCurrentX += e.delta.dx;
       final leftBound =
-      _tabCentres.isNotEmpty ? _tabCentres.first - _pillWidth / 2 : 0.0;
+          _tabCentres.isNotEmpty ? _tabCentres.first - _pillWidth / 2 : 0.0;
       final rightBound =
-      _tabCentres.isNotEmpty ? _tabCentres.last - _pillWidth / 2 : 9999.0;
+          _tabCentres.isNotEmpty ? _tabCentres.last - _pillWidth / 2 : 9999.0;
       if (_dragCurrentX < leftBound) {
         _pillX = leftBound - _rubberBand(leftBound - _dragCurrentX, 80);
       } else if (_dragCurrentX > rightBound) {
@@ -424,12 +428,15 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       } else {
         _pillX = _dragCurrentX;
       }
-      _stretchProgress =
-          (_dragVelocity.abs() * kStretchVelocityFactor).clamp(0.0, kMaxVelocityStretch);
+      _stretchProgress = (_dragVelocity.abs() * kStretchVelocityFactor)
+          .clamp(0.0, kMaxVelocityStretch);
 
       final pillCentre = _pillX + _pillWidth / 2;
       for (int i = 0; i < _tabCentres.length; i++) {
-        if (i == widget.currentIndex) { _tabOffsets[i] = 0.0; continue; }
+        if (i == widget.currentIndex) {
+          _tabOffsets[i] = 0.0;
+          continue;
+        }
         final dist = pillCentre - _tabCentres[i];
         final influence = _pillWidth * 0.9;
         if (dist.abs() < influence) {
@@ -473,7 +480,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       setState(() => _previewPillX = null);
       _liftCtrl.reverse();
       _iridOpacityCtrl.reverse().then((_) {
-        if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+        if (mounted) {
+          _iridCtrl.stop();
+          _iridCtrl.reset();
+        }
       });
       _expandCtrl.reverse();
     } else {
@@ -482,7 +492,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       _expandCtrl.reverse();
       _liftCtrl.reverse();
       _iridOpacityCtrl.reverse().then((_) {
-        if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+        if (mounted) {
+          _iridCtrl.stop();
+          _iridCtrl.reset();
+        }
       });
     }
   }
@@ -493,18 +506,25 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _expandCtrl.reverse();
     _isDragging = false;
     _tabOffsets = List.filled(widget.tabs.length, 0.0);
-    setState(() { _fingerOffset = null; _stretchProgress = 0.0; });
+    setState(() {
+      _fingerOffset = null;
+      _stretchProgress = 0.0;
+    });
     _deactivateLongPress();
     _previewPillX = null;
     _liftCtrl.reverse();
-    _iridOpacityCtrl.reverse().then((_) { _iridCtrl..stop()..reset(); });
+    _iridOpacityCtrl.reverse().then((_) {
+      _iridCtrl
+        ..stop()
+        ..reset();
+    });
   }
 
   bool _isOnActivePill(Offset p) =>
       _tabCentres.isNotEmpty &&
-          _displayIndex == widget.currentIndex &&
-          p.dx >= kInnerPillMargin + _pillX &&
-          p.dx <= kInnerPillMargin + _pillX + _pillWidth;
+      _displayIndex == widget.currentIndex &&
+      p.dx >= kInnerPillMargin + _pillX &&
+      p.dx <= kInnerPillMargin + _pillX + _pillWidth;
 
   double _rubberBand(double o, double r) =>
       (1.0 - (1.0 / ((o * 0.55 / r) + 1.0))) * r;
@@ -541,7 +561,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _liftCtrl.reverse();
     _expandCtrl.reverse();
     _iridOpacityCtrl.reverse().then((_) {
-      if (mounted) { _iridCtrl.stop(); _iridCtrl.reset(); }
+      if (mounted) {
+        _iridCtrl.stop();
+        _iridCtrl.reset();
+      }
     });
   }
 
@@ -552,7 +575,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     final centre = _pillX + _pillWidth / 2;
     for (int i = 0; i < _tabCentres.length; i++) {
       final d = (centre - _tabCentres[i]).abs();
-      if (d < minD) { minD = d; nearest = i; }
+      if (d < minD) {
+        minD = d;
+        nearest = i;
+      }
     }
     if (velocity.abs() > 0.5) {
       nearest = velocity > 0
@@ -574,7 +600,11 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     _isPressed = false;
     _longPressArmed = false;
     _liftCtrl.reverse();
-    _iridOpacityCtrl.reverse().then((_) { _iridCtrl..stop()..reset(); });
+    _iridOpacityCtrl.reverse().then((_) {
+      _iridCtrl
+        ..stop()
+        ..reset();
+    });
     _pendingSnapIndex = index;
     setState(() {
       _displayIndex = index;
@@ -600,11 +630,14 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       _tabSpringCtrl.forward(from: 0.0);
       _impactCtrl.forward(from: 0.0);
       _liftCtrl
-          .animateTo(0.4, duration: const Duration(milliseconds: 120), curve: Curves.easeOut)
+          .animateTo(0.4,
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOut)
           .then((_) {
         if (mounted) {
           _liftCtrl.animateTo(0.0,
-              duration: const Duration(milliseconds: 280), curve: Curves.easeInOut);
+              duration: const Duration(milliseconds: 280),
+              curve: Curves.easeInOut);
         }
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -657,8 +690,14 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
     return AnimatedBuilder(
       animation: Listenable.merge([
-        _liftCtrl, _iridOpacityCtrl, _iridCtrl,
-        _collapseCtrl, _expandCtrl, _restCtrl, _impactCtrl, _stretchCtrl,
+        _liftCtrl,
+        _iridOpacityCtrl,
+        _iridCtrl,
+        _collapseCtrl,
+        _expandCtrl,
+        _restCtrl,
+        _impactCtrl,
+        _stretchCtrl,
       ]),
       builder: (context, _) {
         return SizedBox(
@@ -700,7 +739,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     );
   }
 
-  Widget _buildMainPill(BuildContext context, {
+  Widget _buildMainPill(
+    BuildContext context, {
     required bool isDark,
     required Color accent,
     required double blur,
@@ -751,8 +791,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                     ),
                     inner: ui.ImageFilter.matrix(
                       (Matrix4.identity()
-                        ..setEntry(0, 0, 1.0 + _expandT.value * 0.004)
-                        ..setEntry(1, 1, 1.0 + _expandT.value * 0.003))
+                            ..setEntry(0, 0, 1.0 + _expandT.value * 0.004)
+                            ..setEntry(1, 1, 1.0 + _expandT.value * 0.003))
                           .storage,
                       filterQuality: FilterQuality.medium,
                     ),
@@ -771,13 +811,17 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                     borderRadius: BorderRadius.circular(morphRadius),
                     boxShadow: [
                       BoxShadow(
-                        color: isDark ? const Color(0x22000000) : const Color(0x0C000000),
+                        color: isDark
+                            ? const Color(0x22000000)
+                            : const Color(0x0C000000),
                         blurRadius: 6 + expandAmount * 4,
                         spreadRadius: -2,
                         offset: const Offset(0, 1),
                       ),
                       BoxShadow(
-                        color: isDark ? const Color(0x12000000) : const Color(0x06000000),
+                        color: isDark
+                            ? const Color(0x12000000)
+                            : const Color(0x06000000),
                         blurRadius: 14 + expandAmount * 4,
                         spreadRadius: -6,
                         offset: const Offset(0, 4),
@@ -832,32 +876,39 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                   key: _tabRowKey,
                   child: _pillWidth > 0
                       ? LayoutBuilder(builder: (context, constraints) {
-                    final barW = constraints.maxWidth;
-                    final pillFrac = _pillWidth / barW;
-                    final pillOffFrac = (pillLeft - kInnerPillMargin) / barW;
-                    const feather = 0.015;
-                    final l = (pillOffFrac - feather).clamp(0.0, 1.0);
-                    final lIn = (pillOffFrac + feather).clamp(0.0, 1.0);
-                    final rIn = (pillOffFrac + pillFrac - feather).clamp(0.0, 1.0);
-                    final r = (pillOffFrac + pillFrac + feather).clamp(0.0, 1.0);
-                    return ShaderMask(
-                      blendMode: BlendMode.dstIn,
-                      shaderCallback: (bounds) => LinearGradient(
-                        colors: const [
-                          Colors.white, Colors.transparent,
-                          Colors.transparent, Colors.white,
-                        ],
-                        stops: [l, lIn, rIn, r],
-                      ).createShader(bounds),
-                      child: RepaintBoundary(
-                        key: _tabRowFullKey,
-                        child: _buildTabRowDim(context,
-                            isDark: isDark, accent: accent, collapseT: collapseT),
-                      ),
-                    );
-                  })
+                          final barW = constraints.maxWidth;
+                          final pillFrac = _pillWidth / barW;
+                          final pillOffFrac =
+                              (pillLeft - kInnerPillMargin) / barW;
+                          const feather = 0.015;
+                          final l = (pillOffFrac - feather).clamp(0.0, 1.0);
+                          final lIn = (pillOffFrac + feather).clamp(0.0, 1.0);
+                          final rIn = (pillOffFrac + pillFrac - feather)
+                              .clamp(0.0, 1.0);
+                          final r = (pillOffFrac + pillFrac + feather)
+                              .clamp(0.0, 1.0);
+                          return ShaderMask(
+                            blendMode: BlendMode.dstIn,
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: const [
+                                Colors.white,
+                                Colors.transparent,
+                                Colors.transparent,
+                                Colors.white,
+                              ],
+                              stops: [l, lIn, rIn, r],
+                            ).createShader(bounds),
+                            child: RepaintBoundary(
+                              key: _tabRowFullKey,
+                              child: _buildTabRowDim(context,
+                                  isDark: isDark,
+                                  accent: accent,
+                                  collapseT: collapseT),
+                            ),
+                          );
+                        })
                       : _buildTabRowDim(context,
-                      isDark: isDark, accent: accent, collapseT: collapseT),
+                          isDark: isDark, accent: accent, collapseT: collapseT),
                 ),
               ),
             ),
@@ -884,7 +935,9 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
             if (_pillWidth > 0)
               Positioned(
                 left: pillLeft,
-                top: (kOuterPillHeight / 2) - (kInnerPillHeight / 2) - (0.0 * _liftCtrl.value / 2),
+                top: (kOuterPillHeight / 2) -
+                    (kInnerPillHeight / 2) -
+                    (0.0 * _liftCtrl.value / 2),
                 width: _pillWidth + (20.0 * _liftCtrl.value),
                 height: kInnerPillHeight,
                 child: OverflowBox(
@@ -922,7 +975,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     );
   }
 
-  Widget _buildTabRowDim(BuildContext context, {
+  Widget _buildTabRowDim(
+    BuildContext context, {
     required bool isDark,
     required Color accent,
     required double collapseT,
@@ -944,8 +998,11 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 ),
                 child: Center(
                   child: _buildTabItem(context,
-                      index: i, isDark: isDark, accent: accent,
-                      collapseT: collapseT, useMeasurementKey: true),
+                      index: i,
+                      isDark: isDark,
+                      accent: accent,
+                      collapseT: collapseT,
+                      useMeasurementKey: true),
                 ),
               ),
             );
@@ -955,7 +1012,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     );
   }
 
-  Widget _buildTabRowBright(BuildContext context, {
+  Widget _buildTabRowBright(
+    BuildContext context, {
     required bool isDark,
     required Color accent,
     required double collapseT,
@@ -974,8 +1032,11 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
             ),
             child: Center(
               child: _buildTabItem(context,
-                  index: i, isDark: isDark, accent: accent,
-                  collapseT: collapseT, useMeasurementKey: false),
+                  index: i,
+                  isDark: isDark,
+                  accent: accent,
+                  collapseT: collapseT,
+                  useMeasurementKey: false),
             ),
           ),
         );
@@ -983,7 +1044,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     );
   }
 
-  Widget _buildGlassPillWithClippedRow(BuildContext context, {
+  Widget _buildGlassPillWithClippedRow(
+    BuildContext context, {
     required bool isDark,
     required Color accent,
     required double collapseT,
@@ -1006,8 +1068,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       final barWidth = _barWidth > 0 ? _barWidth : pillWidth;
       final rowOffsetX = -(pillLeft - kInnerPillMargin);
 
-      final expandedRadius = (leftRadius * 1.8) + (kOuterPillHeight * 0.6) * _liftCtrl.value;
-      final pillBorderRadius = BorderRadius.all(Radius.circular(expandedRadius));
+      final expandedRadius =
+          (leftRadius * 1.8) + (kOuterPillHeight * 0.6) * _liftCtrl.value;
+      final pillBorderRadius =
+          BorderRadius.all(Radius.circular(expandedRadius));
 
       final brightRow = IgnorePointer(
         child: ClipRect(
@@ -1023,8 +1087,10 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 child: RepaintBoundary(
                   key: _brightRowKey,
                   child: _buildTabRowBright(context,
-                      isDark: isDark, accent: accent,
-                      collapseT: collapseT, pillLeft: pillLeft),
+                      isDark: isDark,
+                      accent: accent,
+                      collapseT: collapseT,
+                      pillLeft: pillLeft),
                 ),
               ),
             ),
@@ -1037,7 +1103,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
           borderRadius: pillBorderRadius,
           child: Stack(fit: StackFit.expand, children: [
             ColoredBox(
-              color: isDark ? const Color(0x33FFFFFF) : const Color(0x18000000),
+              color: isDark ? const Color(0x22FFFFFF) : const Color(0x1E000000),
             ),
             brightRow,
           ]),
@@ -1048,7 +1114,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
         borderRadius: pillBorderRadius,
         child: Stack(fit: StackFit.expand, children: [
           brightRow,
-
           if (_tabRowSnapshot != null)
             Positioned.fill(
               child: IgnorePointer(
@@ -1064,7 +1129,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 ),
               ),
             ),
-
           if (iridOp > 0.01)
             Positioned.fill(
               child: IgnorePointer(
@@ -1079,7 +1143,6 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
                 ),
               ),
             ),
-
           if (_impactCtrl.value > 0.001)
             Positioned.fill(
               child: CustomPaint(
@@ -1095,7 +1158,8 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     });
   }
 
-  Widget _buildTabItem(BuildContext context, {
+  Widget _buildTabItem(
+    BuildContext context, {
     required int index,
     required bool isDark,
     required Color accent,
@@ -1110,17 +1174,20 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
 
     const appleBlueLight = Color(0xFF007AFF);
     const appleBlueDark = Color(0xFF0A84FF);
-    final inactiveGrey = isDark ? const Color(0xFFF4F3F5) : const Color(0xFF19181D);
+    final inactiveGrey =
+        isDark ? const Color(0xFFF4F3F5) : const Color(0xFF19181D);
 
-    final selectedColor = Color.lerp(
-        tabAccent, isDark ? appleBlueDark : appleBlueLight, 0.8)!;
+    final selectedColor =
+        Color.lerp(tabAccent, isDark ? appleBlueDark : appleBlueLight, 0.8)!;
 
     final effectivePillX =
         _previewPillX ?? (_isDragging ? _pillX : _pillCtrl.value);
     final pillCentre = effectivePillX + (_resolvedPillWidth() ?? 0) / 2;
     final isInteractivePreview = _previewPillX != null || _isDragging;
-    final isUnderPill = isInteractivePreview && !isActive &&
-        _previewPillX != null && (_tabCentres.length > index) &&
+    final isUnderPill = isInteractivePreview &&
+        !isActive &&
+        _previewPillX != null &&
+        (_tabCentres.length > index) &&
         (_tabCentres[index] - effectivePillX).abs() < (_pillWidth / 2) &&
         index != _displayIndex;
 
@@ -1146,40 +1213,45 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
       final halfPill = (_resolvedPillWidth() ?? 0) / 2;
       final centerDistance = (pillCentre - _tabCentres[index]).abs();
       final edgeBand = (_resolvedPillWidth() ?? 0) * 0.50;
-      final edgeContactRaw =
-      ((halfPill + edgeBand - centerDistance) / edgeBand).clamp(0.0, 1.0).toDouble();
+      final edgeContactRaw = ((halfPill + edgeBand - centerDistance) / edgeBand)
+          .clamp(0.0, 1.0)
+          .toDouble();
       final edgeAccent =
-          math.pow(Curves.easeOut.transform(edgeContactRaw), 1.8).toDouble() * 0.42;
+          math.pow(Curves.easeOut.transform(edgeContactRaw), 1.8).toDouble() *
+              0.42;
       final bodyOverlapRaw =
-      ((halfPill * 0.58 - centerDistance) / (halfPill * 0.24)).clamp(0.0, 1.0).toDouble();
+          ((halfPill * 0.58 - centerDistance) / (halfPill * 0.24))
+              .clamp(0.0, 1.0)
+              .toDouble();
       final bodyAccent =
-      math.pow(Curves.easeInOut.transform(bodyOverlapRaw), 0.78).toDouble();
+          math.pow(Curves.easeInOut.transform(bodyOverlapRaw), 0.78).toDouble();
       accentBlendT = math.max(edgeAccent, bodyAccent);
       if (showHoverAccent) accentBlendT = 1.0;
     }
 
     final inactiveBaseColor =
-    isUnderPill ? inactiveGrey.withValues(alpha: 0.25) : inactiveGrey;
+        isUnderPill ? inactiveGrey.withValues(alpha: 0.25) : inactiveGrey;
     final previewAccentColor =
-    Color.lerp(inactiveBaseColor, selectedColor, accentBlendT)!;
+        Color.lerp(inactiveBaseColor, selectedColor, accentBlendT)!;
 
-    final overlayReady = !_isDragging && _previewPillX == null &&
+    final overlayReady = !_isDragging &&
+        _previewPillX == null &&
         _tabCentres.length > _displayIndex &&
         (pillCentre - _tabCentres[_displayIndex]).abs() < 2.0;
 
-    final activeBaseColor =
-    selectedColor.withValues(alpha: isBaseActive && overlayReady ? 0.18 : 1.0);
+    final activeBaseColor = selectedColor.withValues(
+        alpha: isBaseActive && overlayReady ? 0.18 : 1.0);
 
     final iconColor = isOverlayActive
         ? selectedColor
         : isActive && !suppressActiveAccent
-        ? activeBaseColor
-        : previewAccentColor;
+            ? activeBaseColor
+            : previewAccentColor;
     final labelColor = isOverlayActive
         ? selectedColor
         : isActive && !suppressActiveAccent
-        ? activeBaseColor
-        : previewAccentColor;
+            ? activeBaseColor
+            : previewAccentColor;
 
     return Semantics(
       label: tab.semanticLabel ?? tab.label,
@@ -1199,8 +1271,7 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
               TweenAnimationBuilder<Color?>(
                 duration: const Duration(milliseconds: 200),
                 tween: ColorTween(end: iconColor),
-                builder: (context, c, _) =>
-                    Icon(tab.icon, color: c, size: 28),
+                builder: (context, c, _) => Icon(tab.icon, color: c, size: 28),
               ),
               const SizedBox(height: 1),
               TweenAnimationBuilder<Color?>(
@@ -1246,7 +1317,8 @@ class _GelBackdropPainter extends CustomPainter {
       Radius.circular(radius),
     );
 
-    final bottomRect = Rect.fromLTWH(0, size.height * 0.6, size.width, size.height * 0.4);
+    final bottomRect =
+        Rect.fromLTWH(0, size.height * 0.6, size.width, size.height * 0.4);
     final bottomPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
@@ -1292,9 +1364,9 @@ class _GelBackdropPainter extends CustomPainter {
   @override
   bool shouldRepaint(_GelBackdropPainter old) =>
       old.isDark != isDark ||
-          old.radius != radius ||
-          old.expandT != expandT ||
-          old.liftT != liftT;
+      old.radius != radius ||
+      old.expandT != expandT ||
+      old.liftT != liftT;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1319,7 +1391,7 @@ class _GelEdgePainter extends CustomPainter {
 
   static const double _rimZone = 30.0;
   static const double _maxPull = 20.0;
-  static const int    _slices  = 30;
+  static const int _slices = 30;
 
   static double _ease(double t) {
     t = t.clamp(0.0, 1.0);
@@ -1334,10 +1406,13 @@ class _GelEdgePainter extends CustomPainter {
 
     canvas.save();
     canvas.clipRRect(RRect.fromLTRBAndCorners(
-      0, 0, pillWidth, size.height,
-      topLeft:     Radius.circular(leftRadius),
-      bottomLeft:  Radius.circular(leftRadius),
-      topRight:    Radius.circular(rightRadius),
+      0,
+      0,
+      pillWidth,
+      size.height,
+      topLeft: Radius.circular(leftRadius),
+      bottomLeft: Radius.circular(leftRadius),
+      topRight: Radius.circular(rightRadius),
       bottomRight: Radius.circular(rightRadius),
     ));
 
@@ -1345,9 +1420,7 @@ class _GelEdgePainter extends CustomPainter {
 
     for (final isLeft in [true, false]) {
       for (int i = 0; i < _slices; i++) {
-        final dstX = isLeft
-            ? i * sliceW
-            : pillWidth - _rimZone + i * sliceW;
+        final dstX = isLeft ? i * sliceW : pillWidth - _rimZone + i * sliceW;
         final t = isLeft
             ? i / (_slices - 1).toDouble()
             : 1.0 - i / (_slices - 1).toDouble();
@@ -1369,10 +1442,13 @@ class _GelEdgePainter extends CustomPainter {
     }
 
     final rrectBorder = RRect.fromLTRBAndCorners(
-      0, 0, pillWidth, size.height,
-      topLeft:     Radius.circular(leftRadius),
-      bottomLeft:  Radius.circular(leftRadius),
-      topRight:    Radius.circular(rightRadius),
+      0,
+      0,
+      pillWidth,
+      size.height,
+      topLeft: Radius.circular(leftRadius),
+      bottomLeft: Radius.circular(leftRadius),
+      topRight: Radius.circular(rightRadius),
       bottomRight: Radius.circular(rightRadius),
     );
 
@@ -1401,9 +1477,9 @@ class _GelEdgePainter extends CustomPainter {
   @override
   bool shouldRepaint(_GelEdgePainter old) =>
       old.image != image ||
-          old.pillLeft != pillLeft ||
-          old.pillWidth != pillWidth ||
-          old.barWidth != barWidth;
+      old.pillLeft != pillLeft ||
+      old.pillWidth != pillWidth ||
+      old.barWidth != barWidth;
 }
 
 // end of file

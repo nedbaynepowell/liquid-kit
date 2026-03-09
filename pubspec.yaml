@@ -2,8 +2,10 @@ name: liquid_kit
 description: >
   Liquid Glass-inspired Flutter widgets with a spring navigation bar,
     glass buttons, theme helpers, and tunable motion constants.
-version: 0.1.6
-homepage: https://github.com/nedbaynepowell/liquid-kit
+version: 0.1.8
+homepage: https://www.nedpowell.com
+repository: https://github.com/nedbaynepowell/liquid-kit
+issue_tracker: https://github.com/nedbaynepowell/liquid-kit/issues
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
