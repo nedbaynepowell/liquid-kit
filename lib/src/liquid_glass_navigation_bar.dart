@@ -6,7 +6,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme, Brightness, Colors;
+import 'package:flutter/material.dart'
+    show Brightness, Colors, NavigationBar, NavigationDestination, Theme;
 
 import 'liquid_glass_physics.dart';
 import 'liquid_glass_theme.dart';
@@ -599,15 +600,15 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = LiquidGlassTheme.of(context);
     final resolvedMode = widget.mode ?? theme?.mode ?? LiquidGlassMode.always;
-
-    if (resolvedMode == LiquidGlassMode.adaptive &&
-        !liquidGlassAdaptiveShouldUseGlass()) {
-      return const SizedBox.shrink();
-    }
-
     final accent = widget.accentColor ??
         theme?.accentColor ??
         LiquidGlassMaterial.activeContent(context, null);
+
+    if (resolvedMode == LiquidGlassMode.adaptive &&
+        !liquidGlassAdaptiveShouldUseGlass()) {
+      return _buildAdaptiveFallback(context, accent);
+    }
+
     final blur = widget.blurSigma ?? theme?.resolvedBlurSigma ?? kBlurSigma;
     final highContrast = MediaQuery.of(context).highContrast;
 
@@ -637,6 +638,22 @@ class _LiquidGlassNavigationBarState extends State<LiquidGlassNavigationBar>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildAdaptiveFallback(BuildContext context, Color accent) {
+    return NavigationBar(
+      selectedIndex: widget.currentIndex,
+      onDestinationSelected: widget.onTabChanged,
+      indicatorColor: accent.withValues(alpha: 0.18),
+      destinations: [
+        for (final tab in widget.tabs)
+          NavigationDestination(
+            icon: Icon(tab.icon),
+            selectedIcon: Icon(tab.icon, color: tab.accentColor ?? accent),
+            label: tab.label,
+          ),
+      ],
     );
   }
 
