@@ -1,6 +1,7 @@
 ## 0.1.8
 - Add LiquidGlassToolbar — compact pill of icon actions with press/lift animations
 - Add LiquidGlassSearchBar — scroll-hide, focus slide-to-top, animated X button
+- Add BottomSheet - from the bottom when a toolbar is clicked
 - Remove selected state from LiquidGlassToolbar (action-oriented, not navigation)
 - Fix toolbar layout crash (infinite width constraint from StackFit.expand)
 - Fix toolbar icons invisible (blur layer was rendering above glass surface)

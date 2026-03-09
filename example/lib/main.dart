@@ -1,8 +1,6 @@
 // example/lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:liquid_kit/liquid_kit.dart';
-import 'package:liquid_kit/src/liquid_glass_search_bar.dart';
-import 'package:liquid_kit/src/liquid_glass_toolbar.dart';
 
 void main() => runApp(const LiquidKitExampleApp());
 
@@ -157,53 +155,48 @@ class _ExampleHomeState extends State<ExampleHome> {
                 child: IgnorePointer(
                   ignoring: _searchFocused,
                   child: LiquidGlassGroup(
-                    child:Stack(
-                      alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Title — centred across the full row
-                        Positioned(
-                          left: 45,
-                          right: 56,
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: Text(
-                              _tabs[_currentIndex].label,
-                              key: ValueKey(_currentIndex),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: contentColor,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -0.3,
-                                height: 44 / 17,
-                              ),
+                        LiquidGlassButton(
+                          size: 44,
+                          onPressed: widget.onToggleTheme,
+                          child: Icon(
+                            widget.isDarkMode
+                                ? Icons.light_mode_rounded
+                                : Icons.dark_mode_rounded,
+                            color: contentColor,
+                            size: 20,
+                          ),
+                        ),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: Text(
+                            _tabs[_currentIndex].label,
+                            key: ValueKey(_currentIndex),
+                            style: TextStyle(
+                              color: contentColor,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.3,
+                              height: 44 / 17,
                             ),
                           ),
                         ),
-                        // Left and right controls
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            LiquidGlassButton(
-                              size: 44,
-                              onPressed: widget.onToggleTheme,
-                              child: Icon(
-                                widget.isDarkMode
-                                    ? Icons.light_mode_rounded
-                                    : Icons.dark_mode_rounded,
-                                color: contentColor,
-                                size: 20,
-                              ),
-                            ),
-                            LiquidGlassToolbar(
-                              onItemTapped: (i) {},
-                              itemWidth: 40,
-                              items: const [
-                                LiquidGlassToolbarItem(icon: Icons.tune_rounded),
-                                LiquidGlassToolbarItem(icon: Icons.bookmark_rounded),
-                                LiquidGlassToolbarItem(icon: Icons.more_horiz_rounded),
-                              ],
-                            ),
+                        LiquidGlassToolbar(
+                          onItemTapped: (i) {
+                            showLiquidGlassSheet(
+                              context: context,
+                              detents: const [0.4, 0.92],
+                              initialDetent: 0.4,
+                              child: _SheetContent(isDark: isDark),
+                            );
+                          },
+                          itemWidth: 40,
+                          items: const [
+                            LiquidGlassToolbarItem(icon: Icons.tune_rounded),
+                            LiquidGlassToolbarItem(icon: Icons.bookmark_rounded),
+                            LiquidGlassToolbarItem(icon: Icons.more_horiz_rounded),
                           ],
                         ),
                       ],
@@ -267,6 +260,56 @@ class _ExampleHomeState extends State<ExampleHome> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sheet demo content
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SheetContent extends StatelessWidget {
+  const _SheetContent({required this.isDark});
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = isDark ? Colors.white : const Color(0xFF19181D);
+    final subtleColor = textColor.withValues(alpha: 0.4);
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16, top: 4),
+          child: Text('Options',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.3,
+              )),
+        ),
+        ...List.generate(8, (i) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF007AFF).withValues(alpha: isDark ? 0.22 : 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.tune_rounded, color: Color(0xFF007AFF), size: 18),
+              ),
+              const SizedBox(width: 14),
+              Text('Option \${i + 1}',
+                  style: TextStyle(color: textColor, fontSize: 15, fontWeight: FontWeight.w500)),
+              const Spacer(),
+              Text('Value', style: TextStyle(color: subtleColor, fontSize: 15)),
+            ],
+          ),
+        )),
+      ],
     );
   }
 }
