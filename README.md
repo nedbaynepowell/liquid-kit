@@ -1,14 +1,19 @@
 # liquid_kit
 
 `liquid_kit` is a small Flutter package for Liquid Glass-inspired UI chrome.
-Today it ships:
+Today the public library exports:
 
 - `LiquidGlassNavigationBar`
 - `LiquidGlassButton`
+- `LiquidGlassSearchBar`
+- `LiquidGlassToolbar`
+- `showLiquidGlassSheet(...)`
 - `LiquidGlassTheme` and `LiquidGlassMode`
+- `LiquidGlassGroup`
 - exported animation and layout constants from `liquid_glass_physics.dart`
 
-It does not currently include a toolbar, search bar, or general shape primitives.
+The controls are still opinionated building blocks rather than a general-purpose
+glass container or shape system.
 
 ## Preview
 
@@ -20,13 +25,25 @@ It does not currently include a toolbar, search bar, or general shape primitives
 ```bash
 flutter pub add liquid_kit
 ```
-```
-
-```bash
-flutter pub get
-```
 
 No shader registration or extra setup is required.
+
+## Package surface
+
+The package is currently centered on a few polished controls and helpers:
+
+- bottom navigation via `LiquidGlassNavigationBar`
+- circular actions via `LiquidGlassButton`
+- grouped shared-backdrop button chrome via `LiquidGlassGroup`
+- top-bar search via `LiquidGlassSearchBar`
+- compact action rows via `LiquidGlassToolbar`
+- modal sheet presentation via `showLiquidGlassSheet(...)`
+- shared defaults via `LiquidGlassTheme`
+
+The demo app in `example/` uses the navigation bar, grouped buttons, toolbar,
+search bar, and sheet together. If you are trying to understand what is
+supported today, start there and treat `lib/liquid_kit.dart` as the source of
+truth for the exported API.
 
 ## Navigation bar
 
@@ -99,4 +116,27 @@ const double kOuterPillHeight = 70.0;
 
 ## Example
 
-The included demo app lives in `example/` and shows the floating buttons plus the navigation bar over scrollable content.
+The included demo app lives in `example/` and shows the current shipped pieces
+working together over scrollable content.
+
+```bash
+cd example
+flutter run
+```
+
+## Contributing
+
+This repository is a single Flutter package plus the demo app in `example/`.
+When you change package docs or examples, keep them aligned with
+`lib/liquid_kit.dart`, `example/lib/main.dart`, and the current widget tests.
+
+If you are contributing through Switchman, keep the workflow tight:
+
+1. Acquire a lease for your assigned worktree.
+2. Claim only the files you plan to edit before making changes.
+3. Keep the patch scoped to those claimed files; if the scope expands, claim the
+   additional files first.
+4. Run the relevant Flutter checks for the area you touched, usually
+   `flutter test`, and use the demo app in `example/` for visual validation.
+5. Commit on your worktree branch, then mark the task done so Switchman can
+   release the claims.

@@ -15,7 +15,9 @@ import 'liquid_glass_physics.dart';
 import 'liquid_glass_theme.dart';
 import 'liquid_glass_painter.dart';
 
+/// Describes a destination shown by [LiquidGlassNavigationBar].
 class LiquidGlassTab {
+  /// Creates a single navigation destination.
   const LiquidGlassTab({
     required this.icon,
     required this.label,
@@ -23,13 +25,31 @@ class LiquidGlassTab {
     this.semanticLabel,
   });
 
+  /// Icon shown for this destination.
   final IconData icon;
+
+  /// Visible label for this destination.
   final String label;
+
+  /// Per-tab override for the selected tab color.
+  ///
+  /// When null, the bar-level accent color is used instead.
   final Color? accentColor;
+
+  /// Accessibility label announced for this destination.
+  ///
+  /// Defaults to [label].
   final String? semanticLabel;
 }
 
+/// A controlled liquid glass bottom navigation bar with 2 to 5 tabs.
+///
+/// The parent owns the selected state through [currentIndex] and updates it in
+/// response to [onTabChanged]. When [mode] resolves to
+/// [LiquidGlassMode.adaptive] on a non-glass platform, this widget falls back
+/// to Flutter's [NavigationBar].
 class LiquidGlassNavigationBar extends StatefulWidget {
+  /// Creates a liquid glass navigation bar.
   const LiquidGlassNavigationBar({
     super.key,
     required this.tabs,
@@ -45,15 +65,54 @@ class LiquidGlassNavigationBar extends StatefulWidget {
   }) : assert(tabs.length >= 2 && tabs.length <= 5,
             'LiquidGlassNavigationBar supports 2–5 tabs');
 
+  /// Ordered destinations shown by the bar.
+  ///
+  /// Must contain between 2 and 5 tabs.
   final List<LiquidGlassTab> tabs;
+
+  /// Zero-based index of the currently selected tab.
   final int currentIndex;
+
+  /// Called when the user selects a tab.
   final ValueChanged<int> onTabChanged;
+
+  /// Reserved for future scroll-linked collapse behavior.
+  ///
+  /// This parameter is currently unused.
   final ScrollController? scrollController;
+
+  /// Reserved for future scroll-linked collapse behavior.
+  ///
+  /// This parameter is currently unused.
   final bool collapseOnScroll;
+
+  /// Default selected-tab color for tabs without their own
+  /// [LiquidGlassTab.accentColor].
+  ///
+  /// If null, the value falls back to [LiquidGlassTheme.accentColor] and then
+  /// the package default accent color.
   final Color? accentColor;
+
+  /// Overrides the backdrop blur amount for the glass effect.
+  ///
+  /// If null, the value falls back to [LiquidGlassTheme.resolvedBlurSigma] and
+  /// then [kBlurSigma].
   final double? blurSigma;
+
+  /// Overrides the spring stiffness used when the pill moves between tabs.
+  ///
+  /// If null, the widget uses its built-in defaults.
   final double? springStiffness;
+
+  /// Overrides the spring damping used when the pill moves between tabs.
+  ///
+  /// If null, the widget uses its built-in defaults.
   final double? springDamping;
+
+  /// Overrides how this widget chooses between glass and fallback rendering.
+  ///
+  /// If null, the value falls back to [LiquidGlassTheme.mode] and then
+  /// [LiquidGlassMode.always].
   final LiquidGlassMode? mode;
 
   @override
