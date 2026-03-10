@@ -58,12 +58,13 @@ class LiquidGlassGroup extends StatefulWidget {
   const LiquidGlassGroup({
     super.key,
     required this.child,
-    /// Extra padding outside the group's RepaintBoundary so the backdrop
-    /// snapshot includes content that bleeds slightly under the buttons.
     this.capturePadding = 8.0,
   });
 
+  /// The grouped subtree that shares a single backdrop capture.
   final Widget child;
+
+  /// Extra padding around the capture region so nearby content still blurs.
   final double capturePadding;
 
   @override
@@ -217,6 +218,7 @@ class _ButtonBounds {
 /// best results — the group provides a shared backdrop so buttons don't
 /// fog each other. Falls back to an independent snapshot when used alone.
 class LiquidGlassButton extends StatefulWidget {
+  /// Creates a circular liquid glass action button.
   const LiquidGlassButton({
     super.key,
     required this.onPressed,
